@@ -30,3 +30,7 @@ add disabled=no name=siban on-event="/ip dhcp-client add interface=ether5 dis\
     
 #Langkah3, reboot mikrotik
 lalu test
+port 2 ke mik rb450gx
+port 5 ke lan bolt
+
+
