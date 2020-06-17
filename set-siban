@@ -1,0 +1,32 @@
+#langkah 1, copy 1 baris berikut di terminal lalu enter dan klik Y
+
+/sys reset-configuration no-defaults=yes
+
+#Langkah 2, copy script berikut di terminal lalu enter
+
+/sys sch
+add disabled=no name=siban on-event="/ip dhcp-client add interface=ether5 dis\
+    abled=no\r\
+    \n/ip fi na add chain=srcnat action=masqurade\r\
+    \n/ip pool add name=pppoe ranges=172.16.1.2-172.16.1.4\r\
+    \n/ip dns set servers=8.8.8.8,8.8.4.4 allow-remote-requests=yes\r\
+    \n/interface pppoe-server server add disabled=no interface=ether2 service-\
+    name=PPPoE\r\
+    \n/ppp profile add name=\"wms\" local-address=172.16.1.1 remote-address=po\
+    ol-pppoe\r\
+    \n/ppp secret add name=siban password=siban profile=\"wms\" service=pppoe\
+    \r\
+    \n/sys ntp client set enabled=yes primary-ntp=162.159.200.123 secondary-nt\
+    p=162.159.200.1\r\
+    \n/ip firewall filter add chain=forward action=fasttrack-connection connec\
+    tion-state=established,related\r\
+    \n/ip firewall filter add chain=forward action=accept connection-state=est\
+    ablished,related\r\
+    \n/ip firewall filter add chain=forward action=drop connection-state=inval\
+    id\r\
+    \n/sys sch remove siban" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-time=startup
+    
+#Langkah3, reboot mikrotik
+lalu test
