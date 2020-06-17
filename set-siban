@@ -8,6 +8,7 @@
 add disabled=no name=siban on-event="/ip dhcp-client add interface=ether5 dis\
     abled=no\r\
     \n/ip fi na add chain=srcnat action=masqurade\r\
+    \n/ip add add add=172.16.1.1/29 interface=ether2\r\
     \n/ip pool add name=pppoe ranges=172.16.1.2-172.16.1.4\r\
     \n/ip dns set servers=8.8.8.8,8.8.4.4 allow-remote-requests=yes\r\
     \n/interface pppoe-server server add disabled=no interface=ether2 service-\
