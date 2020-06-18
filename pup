@@ -1,0 +1,70 @@
+/interface l2tp-client add connect-to=vpn.winet.id name=all-connection user=wms111 password=wms111 disabled=no
+
+/interface wireless set 0 disabled=no name=Internet mac-address=18:5a:8d:81:28:c8
+/ip dhcp-client add interface=Internet disabled=no
+
+/ip fi nat add chain=srcnat action=masquerade out-interface=Internet
+
+/system script
+add dont-require-permissions=yes name=wms owner=admin policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon source=":\
+    local u \"bismi11ah\"\r\
+    \n:local p \"bismi11ah\"\r\
+    \n:local r \"A56M10\"\r\
+    \n:local gwid \"WAG-D6-BJM\"\r\
+    \n:local wlanid \"PTKSRY00037-N/TLK-CI-42175\"\r\
+    \n:local int \"Internet\"\r\
+    \n\r\
+    \n:if ([/ping 216.239.38.120 interval=0.5 count=3 interface=\$int] = 0 ) d\
+    o={\r\
+    \n:log warning \"Cek-Koneksi\"\r\
+    \n\r\
+    \n/ip dhcp-client release [find interface=\$int];\r\
+    \n:delay 10\r\
+    \n\r\
+    \n/sys sch disable login\r\
+    \n\r\
+    \n:local ip [/ip dhcp-client get value-name=address [find interface=\$int]\
+    ]\r\
+    \n:local mac [/interface wireless get [ find name=\$int ] mac-address]\r\
+    \n:local ip [:put [:pick \$ip 0 [:find \$ip \"/\"]]]\r\
+    \n:log warning \"\$ip  - \$mac\"\r\
+    \n\r\
+    \n/tool fetch http-method=post http-data=\"username_=\$u&username=\
+    \$u.\$r%40freeMS&password=\$p\" url=(\"https://welcome2.w\
+    ifi.id/wms/auth/authnew/autologin/quarantine.php\\\?ipc=\$ip&gw_id=\$gwid&\
+    client_mac=\$mac&redirect=&wlan=\$wlanid\") keep-result=no http-header-fie\
+    ld=\"User-Agent: Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.\
+    15 Version/10.00\"\r\
+    \n\r\
+    \n\t:if ([/ping 216.239.38.120 interval=0.5 count=3 interface=\$int] = 0 )\
+    \_do={\r\
+    \n\t/system script run wms\r\
+    \n\t} else {\r\
+    \n\t:log warning \"Horeeee Login WMS BERHASIL\"\r\
+    \n\t/sys sch enable login\r\
+    \n\t}\r\
+    \n\t:log warning \"Horeeee Login WMS BERHASIL\"\r\
+    \n} else {\r\
+    \n\r\
+    \n}"
+
+/tool netwatch add host=8.8.8.8 interval=5s up-script="/sys sch login disable" down-script="/sys sch login enbale" disabled=no
+
+/sys ntp client set enabled=yes primary-ntp=162.159.200.123 secondary-ntp=162.159.200.1
+
+/system scheduler
+add interval=15s name=login on-event=":if ([/ping 216.239.38.120 interval=0.5 \
+    count=3 interface=\"Internet\"] = 0 ) do={\r\
+    \n/system script run wms\r\
+    \n\r\
+    \n} else {\r\
+    \n\r\
+    \n}" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/1/1970 start-time=00:00:00
+    
+/ip firewall filter
+add chain=forward action=fasttrack-connection connection-state=established,related
+add chain=forward action=accept connection-state=established,related
+add chain=forward action=drop connection-state=invalid
