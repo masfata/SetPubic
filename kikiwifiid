@@ -1,0 +1,13 @@
+:local username "cdj4dw@violet"
+:local password "7yh"
+:local gwid "WAG-D1-BTC"
+:local int "ether1"
+:local mac [/interface ethernet get [ find name=$int ] mac-address]
+:local ip [/ip dhcp-client get value-name=address [find interface=$int]]
+:local ip [:put [:pick $ip 0 [:find $ip "/"]]]
+:log warning "$ip  - $mac"
+:if ([/ping 8.8.8.8 interval=0.2 count=3 interface=$int] = 0 ) do={
+/tool fetch http-method=post http-data="username=$username&password=$password" url=("https://welcome2.wifi.id/authnew/login/check_login.php?ipc=$ip&gw_id=$gwid&client_mac=$00:1c:25:82:8e:9a&wlan&sessionid=0402FFFF780163E4-5EBFBE19=") keep-result=no http-header-field="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/5.0"
+:log warning "INJEKSI BERHASIL ..."
+} else {
+}
