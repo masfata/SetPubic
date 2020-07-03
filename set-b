@@ -1,4 +1,4 @@
-https://welcome2.wifi.id/wms/?gw_id=WAG2-D2-JT&client_mac=d4:6a:6a:1c:82:13&wlan=BKSBGG00172-N/TLK-CI-46964:JUAN76&sessionid=WAG2-D203100124200000b8f006076745
+https://welcome2.wifi.id/wms/?gw_id=WAG2-D2-JT&client_mac=d4:6a:6a:1c:82:13&wlan=BKSBGG00172-N/TLK-CI-46964:@wifi.id&sessionid=WAG2-D203100124200000b8f006076745
 
 /ip dhcp-client add interface=Internet disabled=no
 
