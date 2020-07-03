@@ -1,0 +1,51 @@
+
+/ip dhcp-client add interface=Internet disabled=no
+
+/ip fi nat add chain=srcnat action=masquerade
+/ip add add add=172.16.0.1/24 interface=ether4
+/ip pool add name=pool1 ranges=172.16.0.11-172.16.0.254
+/ip dhcp-server add address-pool=pool1 disabled=no interface=ether4 lease-time=1h \
+    name=dhcp1
+/ip dhcp-server network add address=172.16.0.0/24 gateway=172.16.0.1
+
+/system script
+add dont-require-permissions=no name=wifiid source=":\
+    local username \"cdj4dw@violet\"\r\
+    \n:local password \"7yh\"\r\
+    \n:local gwid \"WAG-D1-BTC\"\r\
+    \n:local int \"Internet\"\r\
+    \n:local mac [/interface ethernet get [ find name=\$int ] mac-address]\r\
+    \n:local ip [/ip dhcp-client get value-name=address [find interface=\$int]\
+    ]\r\
+    \n:local ip [:put [:pick \$ip 0 [:find \$ip \"/\"]]]\r\
+    \n:log warning \"\$ip  - \$mac\"\r\
+    \n:if ([/ping 8.8.8.8 interval=0.2 count=3 interface=\$int] = 0 ) do={\r\
+    \n/tool fetch http-method=post http-data=\"username=\$username&password=\$\
+    password\" url=(\"https://welcome2.wifi.id/authnew/login/check_login.php\?\
+    ipc=\$ip&gw_id=\$gwid&client_mac=\$00:1c:25:82:8e:9a&wlan&sessionid=0402FF\
+    FF780163E4-5EBFBE19=\") keep-result=no http-header-field=\"User-Agent: Moz\
+    illa/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/5.0\"\r\
+    \n:log warning \"INJEKSI BERHASIL ...\"\r\
+    \n} else {\r\
+    \n}"
+
+
+/interface l2tp-client add connect-to=vpn.winet.id name=all-con user=kiki2 password=kiki2 disabled=no
+/tool netwatch add host=8.8.8.8 interval=5s up-script="/sys sch disable login" down-script="/sys sch enable login" disabled=no
+
+/sys ntp client set enabled=yes primary-ntp=162.159.200.123 secondary-ntp=162.159.200.1
+
+/system scheduler
+add interval=15s name=login on-event=":if ([/ping 216.239.38.120 interval=0.5 \
+    count=3 interface=\"Internet\"] = 0 ) do={\r\
+    \n/system script run wifiid\r\
+    \n\r\
+    \n} else {\r\
+    \n\r\
+    \n}" policy=\
+    ftp,reboot,read,write,policy,test,password,sniff,sensitive,romon \
+    start-date=jan/1/1970 start-time=00:00:00
+    
+
+/system reboot
+/system reboot
